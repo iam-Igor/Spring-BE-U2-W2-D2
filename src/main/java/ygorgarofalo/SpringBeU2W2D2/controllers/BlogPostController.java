@@ -54,4 +54,10 @@ public class BlogPostController {
         blogPostService.findByIdAndDelete(id);
     }
 
+
+    //GET di una lista di blog filtrata per categoria scelta
+    @GetMapping("/category/{category}")
+    public List<BlogPost> getListByCategory(@PathVariable String category) {
+        return blogPostService.getBlogPostsByCategory(category);
+    }
 }

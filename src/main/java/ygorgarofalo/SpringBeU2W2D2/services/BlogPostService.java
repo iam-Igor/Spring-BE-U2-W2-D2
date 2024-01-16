@@ -67,4 +67,19 @@ public class BlogPostService {
         }
     }
 
+
+    public List<BlogPost> getBlogPostsByCategory(String category) {
+
+        List<BlogPost> filteredListBycat = new ArrayList<>();
+
+        for (BlogPost blog : blogPostList) {
+            if (blog.getCategory().equals(category)) {
+                filteredListBycat.add(blog);
+            }
+
+
+        }
+        return filteredListBycat;
+    }
+
 }
