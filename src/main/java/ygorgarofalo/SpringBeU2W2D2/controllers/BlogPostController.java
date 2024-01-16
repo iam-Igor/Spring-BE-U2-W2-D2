@@ -18,8 +18,13 @@ public class BlogPostController {
 
     // GET su una lista di blogPosts
     @GetMapping
-    public List<BlogPost> getBlogPosts() {
-        return blogPostService.getAllBlogPosts();
+    public List<BlogPost> getBlogPosts(@RequestParam(required = false) String category) {
+
+        if (category != null) {
+            return blogPostService.getBlogPostsByCategory(category);
+        } else {
+            return blogPostService.getAllBlogPosts();
+        }
     }
 
 
@@ -55,9 +60,4 @@ public class BlogPostController {
     }
 
 
-    //GET di una lista di blog filtrata per categoria scelta
-    @GetMapping("/category/{category}")
-    public List<BlogPost> getListByCategory(@PathVariable String category) {
-        return blogPostService.getBlogPostsByCategory(category);
-    }
 }
