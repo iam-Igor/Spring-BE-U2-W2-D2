@@ -43,4 +43,11 @@ public class AuthorsController {
     }
 
 
+    // Delete di un autore
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAuthor(@PathVariable int id) {
+        authorsService.findByIdAndDelete(id);
+    }
+
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -40,20 +41,31 @@ public class AuthorsService {
 
 
     public Author findByIdAndUpdate(int id, Author body) {
-        Author found = null;
         for (Author author : authorList) {
-            if (body.getId() == id) {
-                found = author;
-                found.setName(author.getName());
-                found.setSurname(author.getSurname());
-                found.setEmail(author.getEmail());
-            } else {
-                return found;
+            if (author.getId() == id) {
+                author.setId(id);
+                author.setName(body.getName());
+                author.setSurname(body.getSurname());
+                author.setEmail(body.getEmail());
+                author.setAvatar(body.getAvatar());
+                return author;
             }
         }
-        return found;
+        return null;
+    }
 
 
+    public void findByIdAndDelete(int id) {
+
+        Iterator<Author> authorIterator = this.authorList.iterator();
+
+        while (authorIterator.hasNext()) {
+            Author actualAuthor = authorIterator.next();
+
+            if (actualAuthor.getId() == id) {
+                authorIterator.remove();
+            }
+        }
     }
 
 }
