@@ -32,7 +32,6 @@ public class BlogPostService {
 
         Author found = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
 
-
         body.setAuthor(found);
 
         blogPostsDAO.save(body);
@@ -48,9 +47,14 @@ public class BlogPostService {
     }
 
 
-    public BlogPost findByIdAndUpdate(long id, BlogPost body) {
+    public BlogPost findByIdAndUpdate(long id, BlogPost body, long authorId) {
 
         BlogPost found = this.findById(id);
+
+        if (authorId > 0) {
+            Author AuthFound = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
+            found.setAuthor(AuthFound);
+        }
 
         found.setCategory(body.getCategory());
         found.setTitle(body.getTitle());
