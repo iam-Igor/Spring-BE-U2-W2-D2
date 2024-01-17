@@ -48,7 +48,7 @@ public class BlogPostController {
 
     //PUT di un blog Post
     @PutMapping("/{id}")
-    public BlogPost updatePost(@PathVariable long id, @RequestBody BlogPost body, @RequestParam(required = false) long authorId) {
+    public BlogPost updatePost(@PathVariable long id, @RequestBody BlogPost body, @RequestParam(required = false, defaultValue = "0") long authorId) {
         return blogPostService.findByIdAndUpdate(id, body, authorId);
     }
 
