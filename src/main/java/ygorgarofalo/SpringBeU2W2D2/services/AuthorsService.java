@@ -1,71 +1,64 @@
 package ygorgarofalo.SpringBeU2W2D2.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
+import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
 
 @Service
 public class AuthorsService {
 
-    private List<Author> authorList = new ArrayList<>();
+    @Autowired
+    AuthorsDAO authorsDAO;
 
 
-    public List<Author> getAuthors() {
-        return this.authorList;
+    public Page<Author> getAuthors(int page, int size, String order) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(order));
+
+        return authorsDAO.findAll(pageable);
     }
 
 
-    public Author findById(int id) {
-        Author found = null;
+    public Author findById(long id) {
 
-        for (Author author : authorList) {
-            if (author.getId() == id) {
-                found = author;
-            } else {
-                return found;
-            }
-        }
-        return found;
+        return authorsDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
 
     public Author save(Author author) {
 
-        this.authorList.add(author);
-        return author;
+        author.setAvatar(author.getName(), author.getSurname());
+        author.setBirthDate();
+        return authorsDAO.save(author);
 
     }
 
 
-    public Author findByIdAndUpdate(int id, Author body) {
-        for (Author author : authorList) {
-            if (author.getId() == id) {
-                author.setId(id);
-                author.setName(body.getName());
-                author.setSurname(body.getSurname());
-                author.setEmail(body.getEmail());
-                author.setAvatar(body.getAvatar());
-                return author;
-            }
-        }
-        return null;
+    public Author findByIdAndUpdate(long id, Author body) {
+
+        Author found = this.findById(id);
+
+        found.setName(body.getName());
+        found.setSurname(body.getSurname());
+        found.setEmail(body.getEmail());
+        found.setAvatar(body.getName(), body.getSurname());
+        authorsDAO.save(found);
+        return found;
+
     }
 
 
-    public void findByIdAndDelete(int id) {
+    public void findByIdAndDelete(long id) {
 
-        Iterator<Author> authorIterator = this.authorList.iterator();
+        Author found = this.findById(id);
 
-        while (authorIterator.hasNext()) {
-            Author actualAuthor = authorIterator.next();
-
-            if (actualAuthor.getId() == id) {
-                authorIterator.remove();
-            }
-        }
+        authorsDAO.delete(found);
     }
 
 }

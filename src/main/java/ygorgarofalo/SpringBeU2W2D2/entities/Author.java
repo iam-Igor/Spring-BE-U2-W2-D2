@@ -1,18 +1,25 @@
 package ygorgarofalo.SpringBeU2W2D2.entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Random;
 
+@Entity
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Author {
 
-    private int id;
+    @Id
+    @GeneratedValue
+    private long id;
 
     private String name;
 
@@ -24,15 +31,22 @@ public class Author {
 
     private String avatar;
 
+
     public Author(String name, String surname, String email) {
-        Random rndm = new Random();
-        this.id = rndm.nextInt(101, 500);
-        this.avatar = "https://ui-avatars.com/api/?name=" + name + "+" + surname;
+
         this.name = name;
         this.surname = surname;
+        this.avatar = setAvatar(name, surname);
         this.email = email;
-        this.birthDate = LocalDate.now();
+        this.birthDate = setBirthDate();
     }
 
 
+    public String setAvatar(String name, String surname) {
+        return this.avatar = "https://ui-avatars.com/api/?name=" + name + "+" + surname;
+    }
+
+    public LocalDate setBirthDate() {
+        return this.birthDate = LocalDate.now();
+    }
 }

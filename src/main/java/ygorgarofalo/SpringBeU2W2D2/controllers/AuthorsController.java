@@ -1,12 +1,11 @@
 package ygorgarofalo.SpringBeU2W2D2.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.services.AuthorsService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
@@ -17,14 +16,16 @@ public class AuthorsController {
 
     //GET su una lista di autori:
     @GetMapping
-    public List<Author> getAuthors() {
-        return authorsService.getAuthors();
+    public Page<Author> getAuthors(@RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "id") String order) {
+        return authorsService.getAuthors(page, size, order);
     }
 
 
     //GET su un autore in particolare
     @GetMapping("/{id}")
-    public Author findById(@PathVariable int id) {
+    public Author findById(@PathVariable long id) {
         return authorsService.findById(id);
     }
 
@@ -37,7 +38,7 @@ public class AuthorsController {
 
     //PUT su un autore
     @PutMapping("/{id}")
-    public Author updateAuthor(@PathVariable int id, @RequestBody Author author) {
+    public Author updateAuthor(@PathVariable long id, @RequestBody Author author) {
 
         return authorsService.findByIdAndUpdate(id, author);
     }
@@ -46,7 +47,7 @@ public class AuthorsController {
     // Delete di un autore
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteAuthor(@PathVariable int id) {
+    public void deleteAuthor(@PathVariable long id) {
         authorsService.findByIdAndDelete(id);
     }
 

@@ -1,17 +1,21 @@
 package ygorgarofalo.SpringBeU2W2D2.entities;
 
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Random;
-
+@Entity
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class BlogPost {
 
-    private int id;
+    @Id
+    @GeneratedValue
+    private long id;
 
     private String category;
 
@@ -23,10 +27,12 @@ public class BlogPost {
 
     private double readingTime;
 
+    @ManyToOne
+    @JoinColumn(name = "author")
+    private Author author;
+
 
     public BlogPost(String category, String title, String coverImg, String content, double readingTime) {
-        Random rndm = new Random();
-        this.id = rndm.nextInt(1, 100);
         this.category = category;
         this.title = title;
         this.coverImg = coverImg;

@@ -1,85 +1,81 @@
 package ygorgarofalo.SpringBeU2W2D2.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.entities.BlogPost;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
+import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
+import ygorgarofalo.SpringBeU2W2D2.repositories.BlogPostsDAO;
 
 @Service
 public class BlogPostService {
 
-    public List<BlogPost> blogPostList = new ArrayList<>();
+    @Autowired
+    private BlogPostsDAO blogPostsDAO;
+
+    @Autowired
+    private AuthorsDAO authorsDAO;
 
 
-    public List<BlogPost> getAllBlogPosts() {
-        return this.blogPostList;
+    public Page<BlogPost> getAllBlogPosts(int page, int size, String order) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(order));
+        return blogPostsDAO.findAll(pageable);
     }
 
 
-    public BlogPost saveBlogPost(BlogPost body) {
-        blogPostList.add(body);
+    public BlogPost saveBlogPost(long authorId, BlogPost body) {
+
+        Author found = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
+
+        body.setAuthor(found);
+
+        blogPostsDAO.save(body);
+
         return body;
+
     }
 
 
-    public BlogPost findById(int id) {
+    public BlogPost findById(long id) {
+        return blogPostsDAO.findById(id).orElseThrow(() -> new NotFoundException(id));
 
-        BlogPost found = null;
+    }
 
-        for (BlogPost post : blogPostList) {
-            if (post.getId() == id) {
-                found = post;
-            } else {
-                return found;
-            }
-        }
+
+    public BlogPost findByIdAndUpdate(long id, BlogPost body) {
+
+        BlogPost found = this.findById(id);
+
+        found.setCategory(body.getCategory());
+        found.setTitle(body.getTitle());
+        found.setContent(body.getContent());
+        found.setReadingTime(body.getReadingTime());
+        found.setCoverImg(body.getCoverImg());
+        blogPostsDAO.save(found);
         return found;
+
     }
 
 
-    public BlogPost findByIdAndUpdate(int id, BlogPost body) {
-        for (BlogPost blog : blogPostList) {
-            if (blog.getId() == id) {
-                blog.setId(id);
-                blog.setCategory(body.getCategory());
-                blog.setTitle(body.getTitle());
-                blog.setContent(body.getContent());
-                blog.setReadingTime(body.getReadingTime());
-                blog.setCoverImg(body.getCoverImg());
-                return blog;
-            }
-        }
-        return null;
+    public void findByIdAndDelete(long id) {
+
+        BlogPost found = this.findById(id);
+
+        blogPostsDAO.delete(found);
+
     }
 
 
-    public void findByIdAndDelete(int id) {
-        Iterator<BlogPost> blogPostIterator = this.blogPostList.iterator();
+    public Page<BlogPost> getBlogPostsByCategory(String category, int page, int size, String order) {
 
-        while (blogPostIterator.hasNext()) {
-            BlogPost actualAuthor = blogPostIterator.next();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(order));
 
-            if (actualAuthor.getId() == id) {
-                blogPostIterator.remove();
-            }
-        }
-    }
-
-
-    public List<BlogPost> getBlogPostsByCategory(String category) {
-
-        List<BlogPost> filteredListBycat = new ArrayList<>();
-
-        for (BlogPost blog : blogPostList) {
-            if (blog.getCategory().equals(category)) {
-                filteredListBycat.add(blog);
-            }
-
-
-        }
-        return filteredListBycat;
+        return blogPostsDAO.findByCategory(category, pageable);
     }
 
 }
