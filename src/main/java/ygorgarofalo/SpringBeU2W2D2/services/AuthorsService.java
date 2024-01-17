@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
+import ygorgarofalo.SpringBeU2W2D2.exceptions.BadRequestExc;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
 import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
 
@@ -33,9 +34,14 @@ public class AuthorsService {
 
     public Author save(Author author) {
 
-        author.setAvatar(author.getName(), author.getSurname());
-        author.setBirthDate();
-        return authorsDAO.save(author);
+        if (authorsDAO.existsByEmail(author.getEmail())) {
+            throw new BadRequestExc("L'email " + author.getEmail() + " è gia presente nel sistema.");
+        } else {
+            author.setAvatar(author.getName(), author.getSurname());
+            author.setBirthDate();
+            return authorsDAO.save(author);
+        }
+
 
     }
 

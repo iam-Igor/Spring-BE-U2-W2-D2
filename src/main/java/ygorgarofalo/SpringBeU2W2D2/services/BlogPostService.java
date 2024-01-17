@@ -32,6 +32,7 @@ public class BlogPostService {
 
         Author found = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
 
+
         body.setAuthor(found);
 
         blogPostsDAO.save(body);
