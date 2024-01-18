@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.entities.BlogPost;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.BlogPostPayloadDTO;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.BlogPostUpdateDTO;
 import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
 import ygorgarofalo.SpringBeU2W2D2.repositories.BlogPostsDAO;
 
@@ -28,15 +30,15 @@ public class BlogPostService {
     }
 
 
-    public BlogPost saveBlogPost(long authorId, BlogPost body) {
+    public BlogPost saveBlogPost(BlogPostPayloadDTO body) {
 
-        Author found = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
+        Author found = authorsDAO.findById(body.authorId()).orElseThrow(() -> new NotFoundException(body.authorId()));
 
-        body.setAuthor(found);
+        BlogPost newBlogPost = new BlogPost(body.category(), body.title(), body.imgUrl(), body.content(), body.readingTime());
+        newBlogPost.setAuthor(found);
 
-        blogPostsDAO.save(body);
+        return blogPostsDAO.save(newBlogPost);
 
-        return body;
 
     }
 
@@ -47,20 +49,20 @@ public class BlogPostService {
     }
 
 
-    public BlogPost findByIdAndUpdate(long id, BlogPost body, long authorId) {
+    public BlogPost findByIdAndUpdate(long id, BlogPostUpdateDTO body) {
 
         BlogPost found = this.findById(id);
 
-        if (authorId > 0) {
-            Author AuthFound = authorsDAO.findById(authorId).orElseThrow(() -> new NotFoundException(authorId));
+        if (body.authorId() > 0) {
+            Author AuthFound = authorsDAO.findById(body.authorId()).orElseThrow(() -> new NotFoundException(body.authorId()));
             found.setAuthor(AuthFound);
         }
 
-        found.setCategory(body.getCategory());
-        found.setTitle(body.getTitle());
-        found.setContent(body.getContent());
-        found.setReadingTime(body.getReadingTime());
-        found.setCoverImg(body.getCoverImg());
+        found.setCategory(body.category());
+        found.setTitle(body.title());
+        found.setContent(body.content());
+        found.setReadingTime(body.readingTime());
+        found.setCoverImg(body.imgUrl());
         blogPostsDAO.save(found);
         return found;
 

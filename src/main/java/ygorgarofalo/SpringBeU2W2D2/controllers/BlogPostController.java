@@ -5,6 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ygorgarofalo.SpringBeU2W2D2.entities.BlogPost;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.BlogPostPayloadDTO;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.BlogPostUpdateDTO;
+import ygorgarofalo.SpringBeU2W2D2.responses.BlogPostResponseDTO;
 import ygorgarofalo.SpringBeU2W2D2.services.BlogPostService;
 
 @RestController
@@ -33,12 +36,14 @@ public class BlogPostController {
     //POST di un BlogPost
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BlogPost saveBlogPost(@RequestParam long authorId, @RequestBody BlogPost body) {
-        return blogPostService.saveBlogPost(authorId, body);
+    public BlogPostResponseDTO saveBlogPost(@RequestBody BlogPostPayloadDTO body) {
+
+        BlogPost newBlogpost = blogPostService.saveBlogPost(body);
+
+        return new BlogPostResponseDTO(newBlogpost.getId());
     }
 
     //GET di un Blog Post tramite id
-
     @GetMapping("/{id}")
     public BlogPost findById(@PathVariable long id) {
 
@@ -48,8 +53,11 @@ public class BlogPostController {
 
     //PUT di un blog Post
     @PutMapping("/{id}")
-    public BlogPost updatePost(@PathVariable long id, @RequestBody BlogPost body, @RequestParam(required = false, defaultValue = "0") long authorId) {
-        return blogPostService.findByIdAndUpdate(id, body, authorId);
+    public BlogPostResponseDTO updatePost(@PathVariable long id, @RequestBody BlogPostUpdateDTO body) {
+
+        BlogPost updatedBlogPost = blogPostService.findByIdAndUpdate(id, body);
+
+        return new BlogPostResponseDTO(id);
     }
 
 

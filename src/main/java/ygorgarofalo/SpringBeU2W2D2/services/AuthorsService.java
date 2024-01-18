@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.BadRequestExc;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.AuthorPayloadDTO;
 import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
 
 @Service
@@ -32,14 +33,17 @@ public class AuthorsService {
     }
 
 
-    public Author save(Author author) {
+    public Author save(AuthorPayloadDTO author) {
 
-        if (authorsDAO.existsByEmail(author.getEmail())) {
-            throw new BadRequestExc("L'email " + author.getEmail() + " è gia presente nel sistema.");
+        Author newAuthor = new Author(author
+                .name(), author.surname(), author.email());
+
+        if (authorsDAO.existsByEmail(author.email())) {
+            throw new BadRequestExc("L'email " + author.email() + " è gia presente nel sistema.");
         } else {
-            author.setAvatar(author.getName(), author.getSurname());
-            author.setBirthDate();
-            return authorsDAO.save(author);
+            newAuthor.setAvatar(author.name(), author.surname());
+            newAuthor.setBirthDate();
+            return authorsDAO.save(newAuthor);
         }
 
 

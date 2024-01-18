@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
+import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.AuthorPayloadDTO;
+import ygorgarofalo.SpringBeU2W2D2.responses.AuthorResponseDTO;
 import ygorgarofalo.SpringBeU2W2D2.services.AuthorsService;
 
 @RestController
@@ -32,8 +34,10 @@ public class AuthorsController {
     //POST di un Autor
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Author saveAuthor(@RequestBody Author author) {
-        return authorsService.save(author);
+    public AuthorResponseDTO saveAuthor(@RequestBody AuthorPayloadDTO author) {
+        Author newAuthor = authorsService.save(author);
+
+        return new AuthorResponseDTO(newAuthor.getId());
     }
 
     //PUT su un autore
