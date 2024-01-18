@@ -36,14 +36,13 @@ public class Author {
 
         this.name = name;
         this.surname = surname;
-        this.avatar = setAvatar(name, surname);
         this.email = email;
         this.birthDate = setBirthDate();
     }
 
 
-    public String setAvatar(String name, String surname) {
-        return this.avatar = "https://ui-avatars.com/api/?name=" + name + "+" + surname;
+    public String setAvatar(String url) {
+        return this.avatar = url;
     }
 
     public LocalDate setBirthDate() {

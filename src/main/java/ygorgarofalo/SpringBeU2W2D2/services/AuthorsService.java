@@ -1,17 +1,22 @@
 package ygorgarofalo.SpringBeU2W2D2.services;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ygorgarofalo.SpringBeU2W2D2.config.MailSender;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.BadRequestExc;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
 import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.AuthorPayloadDTO;
 import ygorgarofalo.SpringBeU2W2D2.repositories.AuthorsDAO;
+
+import java.io.IOException;
 
 @Service
 public class AuthorsService {
@@ -22,6 +27,9 @@ public class AuthorsService {
     @Autowired
     private MailSender mailSender;
 
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     public Page<Author> getAuthors(int page, int size, String order) {
 
@@ -45,7 +53,6 @@ public class AuthorsService {
         if (authorsDAO.existsByEmail(author.email())) {
             throw new BadRequestExc("L'email " + author.email() + " è gia presente nel sistema.");
         } else {
-            newAuthor.setAvatar(author.name(), author.surname());
             newAuthor.setBirthDate();
             mailSender.sendMail();
 
@@ -63,7 +70,6 @@ public class AuthorsService {
         found.setName(body.getName());
         found.setSurname(body.getSurname());
         found.setEmail(body.getEmail());
-        found.setAvatar(body.getName(), body.getSurname());
         authorsDAO.save(found);
         return found;
 
@@ -75,6 +81,20 @@ public class AuthorsService {
         Author found = this.findById(id);
 
         authorsDAO.delete(found);
+    }
+
+
+    public String uploadImage(MultipartFile file, long userId) throws IOException {
+
+        Author found = this.findById(userId);
+
+        String url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+
+        found.setAvatar(url);
+
+        authorsDAO.save(found);
+
+        return url;
     }
 
 }

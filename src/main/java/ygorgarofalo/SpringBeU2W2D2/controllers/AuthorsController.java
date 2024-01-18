@@ -3,8 +3,12 @@ package ygorgarofalo.SpringBeU2W2D2.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
+import ygorgarofalo.SpringBeU2W2D2.exceptions.BadRequestExc;
 import ygorgarofalo.SpringBeU2W2D2.payloadTemplates.AuthorPayloadDTO;
 import ygorgarofalo.SpringBeU2W2D2.responses.AuthorResponseDTO;
 import ygorgarofalo.SpringBeU2W2D2.services.AuthorsService;
@@ -34,10 +38,16 @@ public class AuthorsController {
     //POST di un Autor
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthorResponseDTO saveAuthor(@RequestBody AuthorPayloadDTO author) {
-        Author newAuthor = authorsService.save(author);
+    public AuthorResponseDTO saveAuthor(@RequestBody @Validated AuthorPayloadDTO author, BindingResult bindingResult) {
 
-        return new AuthorResponseDTO(newAuthor.getId());
+        if (bindingResult.hasErrors()) {
+            throw new BadRequestExc("Errori nel payload del submit");
+        } else {
+            Author newAuthor = authorsService.save(author);
+            return new AuthorResponseDTO(newAuthor.getId());
+        }
+
+
     }
 
     //PUT su un autore
@@ -53,6 +63,12 @@ public class AuthorsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAuthor(@PathVariable long id) {
         authorsService.findByIdAndDelete(id);
+    }
+
+
+    @PatchMapping("/{userId}/upload")
+    public String uploadAvatarImg(@RequestParam("image") MultipartFile file, @PathVariable long userId) throws Exception {
+        return authorsService.uploadImage(file, userId);
     }
 
 }
