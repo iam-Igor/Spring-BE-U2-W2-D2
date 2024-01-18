@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ygorgarofalo.SpringBeU2W2D2.config.MailSender;
 import ygorgarofalo.SpringBeU2W2D2.entities.Author;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.BadRequestExc;
 import ygorgarofalo.SpringBeU2W2D2.exceptions.NotFoundException;
@@ -17,6 +18,9 @@ public class AuthorsService {
 
     @Autowired
     AuthorsDAO authorsDAO;
+
+    @Autowired
+    private MailSender mailSender;
 
 
     public Page<Author> getAuthors(int page, int size, String order) {
@@ -43,6 +47,8 @@ public class AuthorsService {
         } else {
             newAuthor.setAvatar(author.name(), author.surname());
             newAuthor.setBirthDate();
+            mailSender.sendMail();
+
             return authorsDAO.save(newAuthor);
         }
 
