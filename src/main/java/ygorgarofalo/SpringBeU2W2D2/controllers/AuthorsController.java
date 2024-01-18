@@ -66,6 +66,7 @@ public class AuthorsController {
     }
 
 
+    //PATCH dell'avatar di author
     @PatchMapping("/{userId}/upload")
     public String uploadAvatarImg(@RequestParam("image") MultipartFile file, @PathVariable long userId) throws Exception {
         return authorsService.uploadImage(file, userId);
